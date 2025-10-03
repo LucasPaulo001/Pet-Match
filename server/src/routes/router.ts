@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express";
 const router = express.Router();
 
-router.get("/welcome", (req: Request, res: Response) => {
-    res.json({Content: "Olá, bem vindo(a) ao PetMatch!"});
-})
+import userRouter from "./userRoutes.js";
+
+router.use("/api/users", userRouter);
 
 //V5qkyQEsPTIcsjJQ
 export default router;

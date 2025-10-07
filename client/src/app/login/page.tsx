@@ -37,6 +37,7 @@ export default function Login() {
           <div>
             <Image src={"/Logo.png"} alt="Logo" width={150} height={90} />
           </div>
+          <span className="text-[#0372B1] flex md:hidden">Encontre seu melhor amigo, adote amor.</span>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 w-80 mx-auto mt-10"

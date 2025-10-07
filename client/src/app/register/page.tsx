@@ -1,4 +1,5 @@
 "use client";
+
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import SliderAuth from "@/components/SliderAuth/SliderAuth";
+import { useAuth } from "@/contexts/AuthContext";
 
 type LoginFormValues = {
   nome: string;
@@ -21,12 +23,21 @@ type LoginFormValues = {
 };
 
 export default function Register() {
+  const { register } = useAuth();
+
   const form = useForm<LoginFormValues>({
     defaultValues: { nome: "", email: "", senha: "" },
   });
 
-  const onSubmit = (values: LoginFormValues) => {
-    console.log("Login data:", values);
+  const onSubmit = async (values: LoginFormValues) => {
+    if(values.senha != values.confirmSenha){
+      return alert("As senhas não são iguais!");
+    };
+
+    await register(values.nome, values.email, values.senha);
+
+    alert("Cadastro realizado com sucesso!");
+
   };
 
   return (
@@ -39,6 +50,7 @@ export default function Register() {
           <div>
             <Image src={"/Logo.png"} alt="Logo" width={150} height={90} />
           </div>
+          <span className="text-[#0372B1] flex md:hidden">Encontre seu melhor amigo, adote amor.</span>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 w-80 mx-auto mt-10"

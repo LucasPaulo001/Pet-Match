@@ -84,3 +84,18 @@ export const login = async (req: CustomRequest, res: Response) => {
     });
   }
 };
+
+//Recuperando dados do usuário
+export const profile = async (req: CustomRequest, res: Response) => {
+  try{
+    const user = req.user;
+    res.status(200).json(user);
+  }
+  catch(error: any){
+    return res.status(500).json({
+      Erro: "Erro interno do servidor! (registro)",
+    });
+  }
+}
+
+

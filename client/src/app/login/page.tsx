@@ -6,12 +6,15 @@ import {
   FormItem,
   FormLabel,
   FormControl,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import SliderAuth from "@/components/SliderAuth/SliderAuth";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 type LoginFormValues = {
   email: string;
@@ -19,12 +22,23 @@ type LoginFormValues = {
 };
 
 export default function Login() {
+
+  const { login, loading } = useAuth();
+
   const form = useForm<LoginFormValues>({
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = (values: LoginFormValues) => {
-    console.log("Login data:", values);
+  //Solicitando login
+  const onSubmit = async (values: LoginFormValues) => {
+    try{
+      await login(values.email, values.password);
+    }
+    catch(error: any){
+      const message =
+        error.response?.data?.error || "Erro ao realizar cadastro.";
+        toast(message);
+    }
   };
 
   return (
@@ -45,24 +59,34 @@ export default function Login() {
             <FormField
               control={form.control}
               name="email"
+              rules={{ 
+                required: "O E-mail é obrigatório.",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Email inválido.",
+                },
+              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="seu@email.com" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
               name="password"
+              rules={{ required: "A senha é obrigatória." }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Senha</FormLabel>
                   <FormControl>
                     <Input {...field} type="password" placeholder="Senha" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

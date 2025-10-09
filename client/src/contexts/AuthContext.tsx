@@ -8,10 +8,11 @@ import {
   useEffect,
 } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 //Interface do usuário
-interface IUser {
+export interface IUser {
   id: string;
   nome: string;
   email: string;
@@ -34,13 +35,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   //Recuperando usuário do localstorage
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token){
       setToken(token);
-      getProfile();
+      getProfile(token);
     }
     setLoading(false);
   }, []);
@@ -59,6 +61,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", data.token);
       setToken(data.token);
 
+      await getProfile(data.token);
+
+      router.push("/");
+
     }
     catch (error) {
       console.error("Erro no login:", error);
@@ -69,19 +75,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   //Função para pegar dados do perfil do usuário
-  const getProfile = async () => {
-    if(!token) return;
+  const getProfile = async (authToken?: string) => {
+    const activeToken = authToken || token;
+    if (!activeToken) return;
 
     try{
       const { data } = await axios.get(
         "https://pet-match-wyjx.onrender.com/api/users/profile",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${activeToken}`,
           },
         }
       );
       setUser(data);
+      console.log(data)
       localStorage.setItem("user", JSON.stringify(data));
     }
     catch(error){
@@ -94,10 +102,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (nome: string, email: string, senha: string) => {
     setLoading(true);
     try{
-        const res = await axios.post("https://pet-match-wyjx.onrender.com/api/users/register", 
+        await axios.post("https://pet-match-wyjx.onrender.com/api/users/register", 
           { nome, email, senha }
         );
 
+        router.push("/login");
     }
     catch(error){
         throw error;
@@ -110,7 +119,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //Função de logout
   function logout() {
     setUser(null);
+    setToken(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
   }
 

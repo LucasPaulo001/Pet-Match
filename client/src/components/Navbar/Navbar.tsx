@@ -1,10 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import Sidebar from "../Sidebar/Sidebar";
+import { useAuth } from "@/contexts/AuthContext";
 
+import { User } from "lucide-react";
+import DropDown from "../DropDown/DropDown";
 
 export default function Navbar() {
+  const { user, token, logout, loading } = useAuth();
+
   return (
     <div className="py-5 px-7">
       <nav className="flex justify-around items-center">
@@ -18,11 +25,10 @@ export default function Navbar() {
             />
           </Link>
         </div>
-          <div className="flex md:hidden">
-            <Sidebar />
-          </div>
+        <div className="flex md:hidden">
+          <Sidebar />
+        </div>
         <div className="hidden md:flex items-center">
-          
           <ul className="flex w-100 justify-around text-[#0372B1]">
             <li>
               <Link
@@ -67,11 +73,15 @@ export default function Navbar() {
           </ul>
         </div>
         <div className="hidden md:flex">
-          <Link href={"/login"}>
-            <Button className="bg-[#0372B1] cursor-pointer hover:bg-[#0a5581]">
-              Conectar-se
-            </Button>
-          </Link>
+          {token && user ? (
+            <DropDown user={user} />
+          ) : (
+            <Link href={"/login"}>
+              <Button className="bg-[#0372B1] cursor-pointer hover:bg-[#0a5581]">
+                Conectar-se
+              </Button>
+            </Link>
+          )}
         </div>
       </nav>
     </div>

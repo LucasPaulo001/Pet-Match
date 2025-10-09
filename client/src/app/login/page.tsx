@@ -15,6 +15,7 @@ import Image from "next/image";
 import SliderAuth from "@/components/SliderAuth/SliderAuth";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { SpinnerCustom } from "@/components/ui/spinner";
 
 type LoginFormValues = {
   email: string;
@@ -22,7 +23,6 @@ type LoginFormValues = {
 };
 
 export default function Login() {
-
   const { login, loading } = useAuth();
 
   const form = useForm<LoginFormValues>({
@@ -31,13 +31,13 @@ export default function Login() {
 
   //Solicitando login
   const onSubmit = async (values: LoginFormValues) => {
-    try{
+    try {
       await login(values.email, values.password);
-    }
-    catch(error: any){
+
+    } catch (error: any) {
       const message =
         error.response?.data?.error || "Erro ao realizar cadastro.";
-        toast(message);
+      toast(message);
     }
   };
 
@@ -51,7 +51,9 @@ export default function Login() {
           <div>
             <Image src={"/Logo.png"} alt="Logo" width={150} height={90} />
           </div>
-          <span className="text-[#0372B1] flex md:hidden">Encontre seu melhor amigo, adote amor.</span>
+          <span className="text-[#0372B1] flex md:hidden">
+            Encontre seu melhor amigo, adote amor.
+          </span>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 w-80 mx-auto mt-10"
@@ -59,7 +61,7 @@ export default function Login() {
             <FormField
               control={form.control}
               name="email"
-              rules={{ 
+              rules={{
                 required: "O E-mail é obrigatório.",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -90,8 +92,19 @@ export default function Login() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-[#0372B1] hover:bg-white hover:text-[#0372B1] cursor-pointer hover:border hover:border-[#0372B1]">
-              Entrar
+            <Button
+              disabled={loading}
+              type="submit"
+              className="w-full bg-[#0372B1] hover:bg-white hover:text-[#0372B1] cursor-pointer hover:border hover:border-[#0372B1]"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <SpinnerCustom />
+                  <span>Logando...</span>
+                </div>
+              ) : (
+                <span>Criar conta</span>
+              )}
             </Button>
           </form>
           <span>

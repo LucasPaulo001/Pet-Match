@@ -4,13 +4,16 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { IUser, useAuth } from "@/contexts/AuthContext";
+import DropDown from "../DropDown/DropDown";
+
 
 export default function Sidebar() {
+  const { user, token } = useAuth();
   return (
     <Sheet>
       <SheetTrigger>
@@ -18,14 +21,20 @@ export default function Sidebar() {
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Olá!</SheetTitle>
-          <SheetDescription className="flex pt-7 items-center gap-10 text-[20px] flex-col">
-            <span>Início</span>
+          <SheetDescription className="flex pt-7 items-center gap-5 text-[20px] flex-col">
+            {
+              token && user ? (
+                <DropDown user={user} />
+              ) : (
+                 <Link href={"/login"}><Button>Conectar-se</Button></Link>
+              )
+            }
+            <span><Link href={"/"}>Início</Link></span>
             <span>Cães</span>
             <span>Gatos</span>
             <span>Sobre nós</span>
             <span>Contato</span>
-            <Link href={"/login"}><Button>Conectar-se</Button></Link>
+           
           </SheetDescription>
         </SheetHeader>
       </SheetContent>

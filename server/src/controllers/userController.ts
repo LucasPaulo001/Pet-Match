@@ -134,8 +134,9 @@ export const registerPet = async (req: CustomRequest, res: Response) => {
 
   }
   catch(error: any){
+    console.log(error);
     return res.status(500).json({
-      Erro: "Erro interno do servidor! (registro)",
+      Erro: "Erro interno do servidor!",
     });
   }
 }

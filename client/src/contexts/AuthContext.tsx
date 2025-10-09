@@ -16,6 +16,7 @@ export interface IUser {
   id: string;
   nome: string;
   email: string;
+  tipo: string;
 }
 
 //Interface do contexto
@@ -25,6 +26,7 @@ interface IAuthContextProps {
   loading: boolean;
   login: (email: string, senha: string) => Promise<void>;
   register: (nome: string, email: string, senha: string) => Promise<void>;
+  registerPet: (nome: string, especie: string, descricao: string, imagem: FileList) => Promise<void>;
   logout: () => void;
 }
 
@@ -117,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   //Função de logout
-  function logout() {
+  const logout = () =>  {
     setUser(null);
     setToken(null);
     localStorage.removeItem("user");
@@ -125,8 +127,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   }
 
+  //Cadastrar Pet
+  const registerPet = async (nome: string, especie: string, descricao: string, imagem: FileList) => {
+    try{
+      setLoading(true);
+      const formData = new FormData();
+
+      formData.append("nome", nome);
+      formData.append("especie", especie);
+      formData.append("descricao", descricao);
+      formData.append("imagem", imagem[0]);
+
+      await axios.post("https://pet-match-wyjx.onrender.com/api/users/register-pet",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
+          },
+        })
+
+    }
+    catch(error: any){
+      throw error;
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, registerPet, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

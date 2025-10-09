@@ -9,11 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { User } from "lucide-react";
+import Link from "next/link";
 
 interface Props {
-    user: IUser;
+  user: IUser;
 }
-
 
 export default function DropDown({ user }: Props) {
   const { logout, loading } = useAuth();
@@ -26,7 +26,9 @@ export default function DropDown({ user }: Props) {
       <DropdownMenuContent>
         <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Perfil</DropdownMenuItem>
+        <Link href={"/profile"}>
+          <DropdownMenuItem>Perfil</DropdownMenuItem>
+        </Link>
         <DropdownMenuItem>FeedBack</DropdownMenuItem>
         <DropdownMenuItem className="flex justify-center">
           <Button

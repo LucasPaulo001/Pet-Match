@@ -22,8 +22,9 @@ export interface IUser {
 //Interface do contexto
 interface IAuthContextProps {
   user: IUser | null;
-  token: string | null
+  token: string | null;
   loading: boolean;
+  success: string | "";
   login: (email: string, senha: string) => Promise<void>;
   register: (nome: string, email: string, senha: string) => Promise<void>;
   registerPet: (nome: string, especie: string, descricao: string, imagem: FileList) => Promise<void>;
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState("");
   const router = useRouter();
 
   //Recuperando usuário do localstorage
@@ -145,7 +147,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`
           },
-        })
+        });
 
     }
     catch(error: any){
@@ -153,11 +155,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     finally{
       setLoading(false);
+      setSuccess("");
     }
   }
 
   return (
-    <AuthContext.Provider value={{ user, registerPet, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, success, registerPet, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

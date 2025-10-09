@@ -42,7 +42,7 @@ type LoginFormValues = {
 }
 
 export default function Profile() {
-  const { registerPet, loading } = useAuth();
+  const { registerPet, loading, success } = useAuth();
 
   const form = useForm<LoginFormValues>({
     defaultValues: { nome: "", especie: "", descricao: "", imagem: undefined as any },
@@ -52,6 +52,10 @@ export default function Profile() {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await registerPet(data.nome, data.especie, data.descricao, data.imagem);
+
+      toast(`Pet ${data.nome} cadastrado(a) com sucesso!`);
+
+      form.reset();
 
     } catch (error: any) {
       const message =

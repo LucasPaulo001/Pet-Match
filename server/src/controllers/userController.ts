@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { CustomRequest } from "../middlewares/authGurard.js";
 import bcrypt from "bcrypt";
 import Pet from "../models/Pet.js";
@@ -119,6 +119,7 @@ export const registerPet = async (req: CustomRequest, res: Response) => {
     const pet = await Pet.create({
       nome,
       especie,
+      dono: userId,
       descricao,
       imagem: imageUrl
     });
@@ -135,6 +136,51 @@ export const registerPet = async (req: CustomRequest, res: Response) => {
   }
   catch(error: any){
     console.log(error);
+    return res.status(500).json({
+      Erro: "Erro interno do servidor!",
+    });
+  }
+}
+
+//Listando pets cadastrados pelo usuário
+export const listMyPets = async (req: CustomRequest, res: Response) => {
+  try{
+    const userId = req.user;
+
+    const user = await User.findById(userId)
+      .populate("petsCadastrados", "nome descricao imagem")
+      .select("-password");
+
+    if(!user){
+      return res.status(404).json({
+        error: "Usuário não encontrado!"
+      });
+    };
+
+    const pets = user.petsCadastrados;
+
+    res.status(200).json({
+      pets
+    });
+
+  }
+  catch(error){
+    return res.status(500).json({
+      Erro: "Erro interno do servidor!",
+    });
+  }
+};
+
+//Listando todos os pets
+export const listPets = async (req: CustomRequest, res: Response) => {
+  try{
+    const pets = await Pet.find();
+
+    res.status(200).json({
+      pets
+    });
+  }
+  catch(error){
     return res.status(500).json({
       Erro: "Erro interno do servidor!",
     });

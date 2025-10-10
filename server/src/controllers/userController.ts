@@ -174,13 +174,57 @@ export const listMyPets = async (req: CustomRequest, res: Response) => {
 //Listando todos os pets
 export const listPets = async (req: CustomRequest, res: Response) => {
   try{
-    const pets = await Pet.find();
+    const pets = await Pet.find()
+      .populate("responsavel", "nome tipo petsCadastrados endereco")
 
     res.status(200).json({
       pets
     });
   }
   catch(error){
+    return res.status(500).json({
+      Erro: "Erro interno do servidor!",
+    });
+  }
+}
+
+//Edição de usuário
+export const editUser = async (req: CustomRequest, res: Response) => {
+  try{
+    const { nome, senha, tipo, endereco } = req.body;
+
+    const userId = req.user;
+
+    const user = await User.findById(userId);
+
+    if(!user){
+      return res.status(404).json({
+        Error: "Usuário não encontrado."
+      });
+    };
+
+    //Edição de dados
+    if(nome) user.nome = nome;
+    if(tipo) user.tipo = tipo;
+    if(endereco) user.endereco = endereco;
+
+    //Edição de senha
+    if(senha){
+      const salt = await bcrypt.genSalt();
+      const hashSenha = await bcrypt.hash(senha, salt)
+      
+      user.senha = hashSenha;
+    }
+
+    await user.save();
+
+    res.status(201).json({
+      message: "Dados editados com sucesso!"
+    });
+
+  }
+  catch(error){
+    console.log(error);
     return res.status(500).json({
       Erro: "Erro interno do servidor!",
     });

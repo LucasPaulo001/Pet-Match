@@ -1,4 +1,5 @@
 import Footer from "../Footer/Footer";
+import ListPets from "../ListPets/ListPets";
 import Section from "../Section/Section";
 import Slider from "../Slider/Slider";
 
@@ -10,6 +11,9 @@ export default function Content() {
       </div>
       <div>
         <Section />
+      </div>
+      <div>
+        <ListPets />
       </div>
 
       {/* <Footer /> */}

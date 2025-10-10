@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { SpinnerCustom } from "@/components/ui/spinner";
 
 import ProfileData from "@/components/Profile/ProfileData";
+import ListMyPets from "@/components/Profile/ListMyPets";
 
 type LoginFormValues = {
   nome: string;
@@ -177,11 +178,12 @@ export default function Profile() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
-                <AccordionTrigger>
+                <AccordionTrigger className="flex flex-col justify-center">
                   <strong>Pets Cadastrados</strong>
+                  <hr />
                 </AccordionTrigger>
                 <AccordionContent>
-
+                  <ListMyPets />
                 </AccordionContent>
               </AccordionItem>
               

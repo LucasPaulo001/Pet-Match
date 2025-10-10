@@ -29,6 +29,8 @@ interface IAuthContextProps {
   register: (nome: string, email: string, senha: string) => Promise<void>;
   registerPet: (nome: string, especie: string, descricao: string, imagem: FileList) => Promise<void>;
   logout: () => void;
+  listMyPets: () => Promise<any>
+  listPets: () => Promise<any>
 }
 
 const AuthContext = createContext<IAuthContextProps | undefined>(undefined);
@@ -159,8 +161,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  //Listando pets cadastrados
+  const listMyPets = async () => {
+    try{
+      const { data } = await axios.get("https://pet-match-wyjx.onrender.com/api/users/list-my-pets", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return data;
+    }
+    catch(error: any){
+      throw error;
+    }
+  }
+
+  //Listando todos os pets cadastrados no sistema
+  const listPets = async () => {
+    try{  
+      const { data } = await axios.get("https://pet-match-wyjx.onrender.com/api/users/list-pets");
+
+      return data;
+    }
+    catch(error: any){
+      throw error;
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, success, registerPet, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, listPets, listMyPets, success, registerPet, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

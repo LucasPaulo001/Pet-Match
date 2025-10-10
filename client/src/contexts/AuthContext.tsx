@@ -163,6 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   //Listando pets cadastrados
   const listMyPets = async () => {
+    setLoading(true);
     try{
       const { data } = await axios.get("https://pet-match-wyjx.onrender.com/api/users/list-my-pets", {
         headers: {
@@ -174,6 +175,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     catch(error: any){
       throw error;
+    }
+    finally{
+      setLoading(false);
     }
   }
 

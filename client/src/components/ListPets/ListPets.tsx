@@ -5,11 +5,15 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"; 
+import DialogWindow from "../Dialog/Dialog";
 
 // Tipagem básica para um Pet
 interface Pet {
   _id: string;
   nome: string;
+  especie: string;
+  descricao: string;
+  dono: any;
   imagem: string;
 }
 
@@ -60,9 +64,13 @@ export default function ListPets() {
       <h2 className="text-2xl font-bold text-[#0372B1]">Conheça seu futuro(a) amigo(a):</h2>
       <div className="flex gap-8 p-10 overflow-x-auto">
         {pets.map((pet) => (
-          <div key={pet._id} className="flex-none w-48 cursor-pointer border border-gray-200 text-center rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-            <img src={pet.imagem} alt={pet.nome} className="w-full h-32 object-cover rounded-md" />
-            <h3 className="text-sm font-semibold mt-2 truncate">{pet.nome}</h3>
+          <div key={pet._id} className="flex-none w-48 flex flex-col gap-3 border border-gray-200 text-center rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+            <div>
+              <img src={pet.imagem} alt={pet.nome} className="w-full h-32 object-cover rounded-md" />
+              <h3 className="text-sm font-semibold mt-2 truncate">{pet.nome}</h3>
+            </div>
+
+            <DialogWindow nome={pet.nome} dono={pet.dono} descricao={pet.descricao} especie={pet.especie} imagem={pet.imagem} />
           </div>
         ))}
       </div>

@@ -9,13 +9,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 
 interface Props {
     nome: string;
     especie: string;
     descricao: string;
     imagem: string;
-    dono: any;
+    
 }
 
 export default function DialogWindow({ nome, especie, descricao, imagem }: Props) {
@@ -26,14 +27,22 @@ export default function DialogWindow({ nome, especie, descricao, imagem }: Props
             +Info
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Sobre {nome}</DialogTitle>
-          <div>
-            <div className="h-64 mt-2 flex justify-center items-center gap-2.5 flex-col">
-                <img src={imagem} className="min-h-48 h-full rounded-2xl" alt="imagem de Maze" />
-                <span className="font-bold text-2xl">Descrição:</span>
+          <div className="h-100">
+            <div className="h-64 mt-2 flex gap-2.5 flex-col">
+                <div className="h-full flex justify-center items-center">
+                  <img src={imagem} className="min-h-48 h-full rounded-2xl" alt="imagem de Maze" />
+                </div>
+                <span className="font-bold text-2xl">Descrição</span>
                 <span className="text-[18px]">{descricao}</span>
+                <Separator />
+                <span className="font-bold text-2xl">Dados</span>
+                <span>Espécie: {especie}</span>
+                <Separator />
+                <span className="font-bold text-2xl">Dados do responsável</span>
+                {/* <span>Nome: {responsavel.nome}</span> */}
             </div>
           </div>
         </DialogHeader>

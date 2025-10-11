@@ -13,7 +13,9 @@ interface Pet {
   nome: string;
   especie: string;
   descricao: string;
-  dono: any;
+  responsavel: {
+    nome: string;
+  };
   imagem: string;
 }
 
@@ -29,6 +31,7 @@ export default function ListPets() {
         const result = await listPets();
 
         const petList = result.pets;
+        console.log(petList.responsavel)
 
         setPets(petList || []);
       } catch (error) {
@@ -70,7 +73,7 @@ export default function ListPets() {
               <h3 className="text-sm font-semibold mt-2 truncate">{pet.nome}</h3>
             </div>
 
-            <DialogWindow nome={pet.nome} dono={pet.dono} descricao={pet.descricao} especie={pet.especie} imagem={pet.imagem} />
+            <DialogWindow nome={pet.nome} descricao={pet.descricao} especie={pet.especie} imagem={pet.imagem} />
           </div>
         ))}
       </div>

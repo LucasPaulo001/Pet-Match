@@ -16,13 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Edit } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { useAuth } from "@/contexts/AuthContext";
+import { IUser, useAuth } from "@/contexts/AuthContext";
 import { SpinnerCustom } from "../ui/spinner";
 import { toast } from "sonner";
 
 interface Props {
   nome?: string;
   tipo?: string;
+  senha?: string;
+  confirmSenha?: string;
   endereco?: {
     rua?: string;
     bairro?: string;
@@ -32,10 +34,18 @@ interface Props {
   };
 }
 
-export default function EditWindow({ nome, tipo, endereco }: Props) {
+export default function EditWindow({
+  nome,
+  tipo,
+  endereco,
+  confirmSenha,
+  senha,
+}: Props) {
   const [formData, setFormData] = useState({
     nome: nome || "",
     tipo: tipo || "",
+    senha: senha || "",
+    confirmSenha: confirmSenha || "",
     rua: endereco?.rua || "",
     numero: endereco?.numero || "",
     bairro: endereco?.bairro || "",
@@ -53,8 +63,26 @@ export default function EditWindow({ nome, tipo, endereco }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Dados atualizados:", formData);
-    
-    await editData(formData);
+
+    //Payload customizado para a requisição do backend
+    const payload: Partial<IUser> = {
+      nome: formData.nome || undefined,
+      tipo: formData.tipo || undefined,
+      senha: formData.senha || undefined,
+      endereco: {
+        ...formData.rua && { rua: formData.rua },
+        ...formData.numero && { numero: formData.numero },
+        ...formData.bairro && { bairro: formData.bairro },
+        ...formData.cidade && { cidade: formData.cidade },
+        ...formData.estado && { estado: formData.estado },
+      },
+    };
+
+    if (payload.senha != formData.confirmSenha && formData.confirmSenha.length > 0) {
+      return toast("As senhas não estão iguais");
+    }
+
+    await editData(payload);
 
     toast("Dados editados com sucesso!");
   };
@@ -96,6 +124,30 @@ export default function EditWindow({ nome, tipo, endereco }: Props) {
                 value={formData.tipo}
                 onChange={handleChange}
                 placeholder="Ex: responsável, adotante..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="tipo">Senha</Label>
+              <Input
+                type="password"
+                id="senha"
+                name="senha"
+                value={formData.senha}
+                onChange={handleChange}
+                placeholder="Informe a nova senha..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="tipo">Repita senha</Label>
+              <Input
+                type="password"
+                id="senha"
+                name="confirmSenha"
+                value={formData.confirmSenha}
+                onChange={handleChange}
+                placeholder="Repita a nova senha..."
               />
             </div>
 
@@ -159,21 +211,22 @@ export default function EditWindow({ nome, tipo, endereco }: Props) {
 
           <DialogFooter className="mt-4 flex justify-end gap-2">
             <DialogClose asChild>
-                <Button type="button"  variant="outline">
-                  Cancelar
-                </Button>
+              <Button type="button" variant="outline">
+                Cancelar
+              </Button>
             </DialogClose>
-            <Button disabled={loading} type="submit" className="bg-[#6773F1] hover:bg-[#5660d1]">
-                {
-                    loading ? (
-                        <span className="flex gap-3">
-                            <SpinnerCustom /> Editando...
-                        </span>
-                    ) : (
-                        <span>Salvar alterações</span>
-                    )
-                }
-              
+            <Button
+              disabled={loading}
+              type="submit"
+              className="bg-[#6773F1] hover:bg-[#5660d1]"
+            >
+              {loading ? (
+                <span className="flex gap-3">
+                  <SpinnerCustom /> Editando...
+                </span>
+              ) : (
+                <span>Salvar alterações</span>
+              )}
             </Button>
           </DialogFooter>
         </form>

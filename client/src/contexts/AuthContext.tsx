@@ -20,14 +20,15 @@ type EditUserResponse = {
 export interface IUser {
   id: string;
   nome: string;
+  senha: string;
   email: string;
   tipo: string;
   endereco: {
-    rua: string;
-    bairro: string;
-    numero: string;
-    cidade: string;
-    estado: string;
+    rua?: string;
+    bairro?: string;
+    numero?: string;
+    cidade?: string;
+    estado?: string;
   };
 }
 
@@ -211,7 +212,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try{
       setLoading(true);
       const {data} = await axios.patch("https://pet-match-wyjx.onrender.com/api/users/edit-data",
-        formData,
+        {
+          nome: formData.nome,
+          senha: formData.senha,
+          tipo: formData.tipo,
+          endereco: formData.endereco
+        },
         {
           headers: {
             "Content-Type": "application/json",

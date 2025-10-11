@@ -216,7 +216,12 @@ export const editUser = async (req: CustomRequest, res: Response) => {
     //Edição de dados
     if(nome) user.nome = nome;
     if(tipo) user.tipo = tipo;
-    if(endereco) user.endereco = endereco;
+    if(endereco) {
+      user.endereco = {
+        ...user.endereco,
+        ...endereco,
+      };
+    }
 
     //Edição de senha
     if(senha){
@@ -229,7 +234,8 @@ export const editUser = async (req: CustomRequest, res: Response) => {
     await user.save();
 
     res.status(201).json({
-      message: "Dados editados com sucesso!"
+      message: "Dados editados com sucesso!",
+      updatedUser: user
     });
 
   }

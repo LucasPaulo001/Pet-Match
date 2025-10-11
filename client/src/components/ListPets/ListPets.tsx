@@ -6,6 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"; 
 import DialogWindow from "../Dialog/Dialog";
+import { Span } from "next/dist/trace";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 
 // Tipagem básica para um Pet
 interface Pet {
@@ -13,9 +16,7 @@ interface Pet {
   nome: string;
   especie: string;
   descricao: string;
-  responsavel: {
-    nome: string;
-  };
+  responsavel: any;
   imagem: string;
 }
 
@@ -31,7 +32,7 @@ export default function ListPets() {
         const result = await listPets();
 
         const petList = result.pets;
-        console.log(petList.responsavel)
+        console.log(petList)
 
         setPets(petList || []);
       } catch (error) {
@@ -66,16 +67,26 @@ export default function ListPets() {
    <section className="w-full p-10">
       <h2 className="text-2xl font-bold text-[#0372B1]">Conheça seu futuro(a) amigo(a):</h2>
       <div className="flex gap-8 p-10 overflow-x-auto">
-        {pets.map((pet) => (
-          <div key={pet._id} className="flex-none w-48 flex flex-col gap-3 border border-gray-200 text-center rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
-            <div>
-              <img src={pet.imagem} alt={pet.nome} className="w-full h-32 object-cover rounded-md" />
-              <h3 className="text-sm font-semibold mt-2 truncate">{pet.nome}</h3>
-            </div>
+        {pets.length === 0 ? (
+          <span className="text-[20px] p-0">
+            <Alert>
+              <AlertCircleIcon />
+              <AlertTitle>Não tem nenhum Pet cadastrado ainda...</AlertTitle>
+              <AlertDescription>Ajude um Pet a ganhar um lar!</AlertDescription>
+            </Alert>
+          </span>
+        ) : (
+          pets.map((pet) => (
+            <div key={pet._id} className="flex-none w-48 flex flex-col gap-3 border border-gray-200 text-center rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
+              <div>
+                <img src={pet.imagem} alt={pet.nome} className="w-full h-32 object-cover rounded-md" />
+                <h3 className="text-sm font-semibold mt-2 truncate">{pet.nome}</h3>
+              </div>
 
-            <DialogWindow nome={pet.nome} descricao={pet.descricao} especie={pet.especie} imagem={pet.imagem} />
-          </div>
-        ))}
+              <DialogWindow nome={pet.nome} responsavel={pet.responsavel} descricao={pet.descricao} especie={pet.especie} imagem={pet.imagem} />
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

@@ -102,7 +102,7 @@ export const profile = async (req: CustomRequest, res: Response) => {
 //Cadastrando Pet para adoção
 export const registerPet = async (req: CustomRequest, res: Response) => {
   try{
-    const { nome, especie, descricao } = req.body;
+    const { nome, especie, descricao, idade, porte } = req.body;
 
     const imageUrl = (req.file as any)?.path;
 
@@ -119,8 +119,10 @@ export const registerPet = async (req: CustomRequest, res: Response) => {
     const pet = await Pet.create({
       nome,
       especie,
-      dono: userId,
+      responsavel: userId,
       descricao,
+      idade,
+      porte,
       imagem: imageUrl
     });
 
@@ -175,13 +177,21 @@ export const listMyPets = async (req: CustomRequest, res: Response) => {
 export const listPets = async (req: CustomRequest, res: Response) => {
   try{
     const pets = await Pet.find()
-      .populate("responsavel", "nome tipo petsCadastrados endereco")
+      .populate({
+        path: "responsavel",
+        select: "nome tipo endereco petsCadastrados",
+        populate: {
+          path: "petsCadastrados", // aqui você popula os pets do responsável
+          select: "nome idade descricao especie imagem" // campos que quer retornar
+        }
+      });
 
     res.status(200).json({
       pets
     });
   }
   catch(error){
+    console.log(error);
     return res.status(500).json({
       Erro: "Erro interno do servidor!",
     });

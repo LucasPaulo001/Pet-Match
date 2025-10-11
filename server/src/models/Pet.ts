@@ -5,6 +5,8 @@ interface IPets {
     especie: string;
     responsavel: Types.ObjectId;
     descricao: string;
+    idade: number;
+    porte: string;
     imagem: string;
 };
 
@@ -19,9 +21,17 @@ const PetSchema = new Schema<IPets>({
         required: true
     },
 
+    idade: {
+        type: Number
+    },
+
     responsavel: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+
+    porte: {
+        type: String
     },
 
     descricao: {

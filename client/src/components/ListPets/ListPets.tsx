@@ -6,7 +6,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"; 
 import DialogWindow from "../Dialog/Dialog";
-import { Span } from "next/dist/trace";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 

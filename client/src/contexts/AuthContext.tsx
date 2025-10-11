@@ -10,6 +10,11 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+type EditUserResponse = {
+  updatedUser: IUser;
+  message?: string;
+};
+
 
 //Interface do usuário
 export interface IUser {
@@ -17,6 +22,13 @@ export interface IUser {
   nome: string;
   email: string;
   tipo: string;
+  endereco: {
+    rua: string;
+    bairro: string;
+    numero: string;
+    cidade: string;
+    estado: string;
+  };
 }
 
 //Interface do contexto
@@ -31,6 +43,7 @@ interface IAuthContextProps {
   logout: () => void;
   listMyPets: () => Promise<any>
   listPets: () => Promise<any>
+  editData: (formData: Partial<IUser>) => Promise<EditUserResponse>;
 }
 
 const AuthContext = createContext<IAuthContextProps | undefined>(undefined);
@@ -193,8 +206,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  //Editar dados do usuário 
+  const editData = async (formData: Partial<IUser>): Promise<EditUserResponse> => {
+    try{
+      setLoading(true);
+      const {data} = await axios.patch("https://pet-match-wyjx.onrender.com/api/users/edit-data",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      setUser((prev) => ({
+        ...prev!,
+        ...data.updatedUser,
+      }));
+
+      localStorage.setItem("user", JSON.stringify({
+        ...user,
+        ...data.updatedUser,
+      }));
+
+      return data;
+    }
+    catch(error: any){
+      throw error;
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, listPets, listMyPets, success, registerPet, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, editData, listPets, listMyPets, success, registerPet, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

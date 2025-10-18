@@ -46,11 +46,17 @@ export default function Sidebar() {
               </Link>
             </span>
             <span>
-              Cães
+              <Link href={"/dogs"} onClick={handleLinkClick}>
+                Cães
+              </Link>
             </span>
-            <span>Gatos</span>
-            <span>Sobre nós</span>
-            <span>Contato</span>
+            <span>
+              <Link href={"/cats"} onClick={handleLinkClick}>
+                Gatos
+              </Link>
+            </span>
+            {/* <span>Sobre nós</span>
+            <span>Contato</span> */}
            
           </SheetDescription>
         </SheetHeader>

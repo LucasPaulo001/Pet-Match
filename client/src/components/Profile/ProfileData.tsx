@@ -16,43 +16,43 @@ export default function ProfileData() {
         <Separator />
         <li>
           <strong>Rua:</strong>{" "}
-          {!user?.endereco.rua ? (
+          {!user?.endereco?.rua ? (
             <span className="text-red-500">Campo vazio</span>
           ) : (
-            user.endereco.rua
+            user?.endereco.rua
           )}
         </li>
         <li>
           <strong>Numero:</strong>{" "}
-          {!user?.endereco.numero ? (
+          {!user?.endereco?.numero ? (
             <span className="text-red-500">Campo vazio</span>
           ) : (
-            user.endereco.numero
+            user?.endereco.numero
           )}
         </li>
         <li>
           <strong>Bairro:</strong>{" "}
-          {!user?.endereco.bairro ? (
+          {!user?.endereco?.bairro ? (
             <span className="text-red-500">Campo vazio</span>
           ) : (
-            user.endereco.bairro
+            user?.endereco.bairro
           )}
         </li>
 
         <li>
           <strong>Cidade:</strong>{" "}
-          {!user?.endereco.cidade ? (
+          {!user?.endereco?.cidade ? (
             <span className="text-red-500">Campo vazio</span>
           ) : (
-            user.endereco.cidade
+            user?.endereco.cidade
           )}
         </li>
         <li>
           <strong>Estado:</strong>{" "}
-          {!user?.endereco.estado ? (
+          {!user?.endereco?.estado ? (
             <span className="text-red-500">Campo vazio</span>
           ) : (
-            user.endereco.estado
+            user?.endereco.estado
           )}
         </li>
       </ul>

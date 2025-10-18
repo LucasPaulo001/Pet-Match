@@ -13,7 +13,7 @@ export default function Content() {
         <Section />
       </div>
       <div>
-        <ListPets />
+        <ListPets valueCats={true} valueDogs={true} />
       </div>
 
       {/* <Footer /> */}

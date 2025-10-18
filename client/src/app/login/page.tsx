@@ -103,7 +103,7 @@ export default function Login() {
                   <span>Logando...</span>
                 </div>
               ) : (
-                <span>Criar conta</span>
+                <span>Fazer login</span>
               )}
             </Button>
           </form>

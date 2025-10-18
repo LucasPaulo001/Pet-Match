@@ -64,8 +64,8 @@ export default function DialogWindow({
             <p><strong>Nome:</strong> {responsavel.nome}</p>
             <p><strong>Tipo:</strong> {responsavel.tipo}</p>
             <p>
-              <strong>Endereço:</strong> {responsavel.endereco.rua},{" "}
-              {responsavel.endereco.bairro}
+              <strong>Endereço:</strong> {responsavel.endereco?.rua},{" "}
+              {responsavel.endereco?.bairro}
             </p>
             <Button variant={"link"}>
               Sobre {responsavel.nome}

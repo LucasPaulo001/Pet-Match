@@ -8,21 +8,21 @@ import DropdownItems from "../DropDown/DropDownItems";
 
 
 export default function ListMyPets() {
-  const [myPets, setMyPets] = useState<any[]>([]);
-  const { listMyPets, loading } = useAuth();
 
-  useEffect(() => {
-    const handleList = async () => {
-      try {
-        const { pets } = await listMyPets();
-        setMyPets(pets || []);
-      } catch (error) {
-        console.error("Erro ao buscar pets:", error);
-      }
-    };
+  const { loading, myPets } = useAuth();
 
-    handleList();
-  }, []);
+  // useEffect(() => {
+  //   const handleList = async () => {
+  //     try {
+  //       const { pets } = await listMyPets();
+  //       setMyPets(pets || []);
+  //     } catch (error) {
+  //       console.error("Erro ao buscar pets:", error);
+  //     }
+  //   };
+
+  //   handleList();
+  // }, []);
 
   return (
     <section>
@@ -40,7 +40,7 @@ export default function ListMyPets() {
               className="flex-none w-48 border border-gray-200 text-center rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex justify-end">
-                <DropdownItems nome={pet.nome} />
+                <DropdownItems nome={pet.nome} petId={pet._id} />
               </div>
               <img
                 src={pet.imagem}

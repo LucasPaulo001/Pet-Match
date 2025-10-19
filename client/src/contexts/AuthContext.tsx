@@ -44,7 +44,9 @@ interface IAuthContextProps {
   logout: () => void;
   listMyPets: () => Promise<any>
   listPets: () => Promise<any>
+  deletePets: (petId: string) => Promise<void>
   editData: (formData: Partial<IUser>) => Promise<EditUserResponse>;
+  myPets: any[];
 }
 
 const AuthContext = createContext<IAuthContextProps | undefined>(undefined);
@@ -55,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState("");
+  const [myPets, setMyPets] = useState<any[]>([]);
   const router = useRouter();
 
   //Recuperando usuário do localstorage
@@ -199,13 +202,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const listPets = async () => {
     try{  
       const { data } = await axios.get("https://pet-match-wyjx.onrender.com/api/users/list-pets");
-
+      
       return data;
     }
     catch(error: any){
       throw error;
     }
   }
+
+  useEffect(() => {
+  if (!token) return; // só executa quando o token estiver carregado
+
+  const handleList = async () => {
+    try {
+      const { pets } = await listMyPets();
+      setMyPets(pets || []);
+    } catch (error) {
+      console.error("Erro ao buscar pets:", error);
+    }
+  };
+
+  handleList();
+}, [token]);
 
   //Editar dados do usuário 
   const editData = async (formData: Partial<IUser>): Promise<EditUserResponse> => {
@@ -246,8 +264,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  //Deletar pets
+  const deletePets = async (petId: string) => {
+    setLoading(true);
+    try{  
+      await axios.delete(`https://pet-match-wyjx.onrender.com/api/users/delete-pet/${petId}`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setMyPets((prev) => prev.filter((pet) => pet._id !== petId));
+
+      const { pets } = await listMyPets();
+      setMyPets(pets || []);
+    }
+    catch(error: any){
+      throw error;
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, editData, listPets, listMyPets, success, registerPet, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, myPets, deletePets, editData, listPets, listMyPets, success, registerPet, token, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

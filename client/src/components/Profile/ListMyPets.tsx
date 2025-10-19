@@ -3,6 +3,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { SpinnerCustom } from "../ui/spinner";
+import DropdownItems from "../DropDown/DropDownItems";
+
+
 
 export default function ListMyPets() {
   const [myPets, setMyPets] = useState<any[]>([]);
@@ -36,6 +39,9 @@ export default function ListMyPets() {
               key={pet._id}
               className="flex-none w-48 border border-gray-200 text-center rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow"
             >
+              <div className="flex justify-end">
+                <DropdownItems nome={pet.nome} />
+              </div>
               <img
                 src={pet.imagem}
                 alt={pet.nome}

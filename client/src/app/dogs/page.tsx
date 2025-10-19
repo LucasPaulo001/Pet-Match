@@ -1,6 +1,6 @@
 import ListPets from "@/components/ListPets/ListPets";
 
-export default async function DogsPage(){
+export default function DogsPage(){
 
     return(
         <div>

@@ -5,6 +5,7 @@ import { Request, response, Response } from "express";
 import { CustomRequest } from "../middlewares/authGurard.js";
 import bcrypt from "bcrypt";
 import Pet from "../models/Pet.js";
+import cloudinary from "../settings/cloudinary.js";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -246,5 +247,38 @@ export const editUser = async (req: CustomRequest, res: Response) => {
     });
   }
 }
+
+//Excluir Pets cadastrados
+export const deletePet = async (req: CustomRequest, res: Response) => {
+  try {
+    const { petId } = req.params;
+
+    const pet = await Pet.findById(petId);
+    if (!pet) {
+      return res.status(404).json({ error: "Pet não encontrado" });
+    }
+
+    if (pet.imagem) {
+      const match = pet.imagem.match(/\/upload\/v\d+\/(.+)\.\w+$/);
+      if (match && match[1]) {
+        const publicId = match[1];
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log("Deletado com sucesso no Cloudinary");
+        } catch (err) {
+          console.error("Erro ao deletar no Cloudinary:", err);
+        }
+      }
+    }
+
+    await pet.deleteOne();
+
+    res.status(200).json({ message: "Pet deletado com sucesso." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ Erro: "Erro interno do servidor!" });
+  }
+};
+
 
 

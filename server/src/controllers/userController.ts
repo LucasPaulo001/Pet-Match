@@ -5,6 +5,7 @@ import { Request, response, Response } from "express";
 import { CustomRequest } from "../middlewares/authGurard.js";
 import bcrypt from "bcrypt";
 import Pet from "../models/Pet.js";
+import cloudinary from "../settings/cloudinary.js";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -102,7 +103,7 @@ export const profile = async (req: CustomRequest, res: Response) => {
 //Cadastrando Pet para adoção
 export const registerPet = async (req: CustomRequest, res: Response) => {
   try{
-    const { nome, especie, descricao } = req.body;
+    const { nome, especie, descricao, idade, porte } = req.body;
 
     const imageUrl = (req.file as any)?.path;
 
@@ -119,8 +120,10 @@ export const registerPet = async (req: CustomRequest, res: Response) => {
     const pet = await Pet.create({
       nome,
       especie,
-      dono: userId,
+      responsavel: userId,
       descricao,
+      idade,
+      porte,
       imagem: imageUrl
     });
 
@@ -174,17 +177,108 @@ export const listMyPets = async (req: CustomRequest, res: Response) => {
 //Listando todos os pets
 export const listPets = async (req: CustomRequest, res: Response) => {
   try{
-    const pets = await Pet.find();
+    const pets = await Pet.find()
+      .populate({
+        path: "responsavel",
+        select: "nome tipo endereco petsCadastrados",
+        populate: {
+          path: "petsCadastrados", // aqui você popula os pets do responsável
+          select: "nome idade descricao especie imagem" // campos que quer retornar
+        }
+      });
 
     res.status(200).json({
       pets
     });
   }
   catch(error){
+    console.log(error);
     return res.status(500).json({
       Erro: "Erro interno do servidor!",
     });
   }
 }
+
+//Edição de usuário
+export const editUser = async (req: CustomRequest, res: Response) => {
+  try{
+    const { nome, senha, tipo, endereco } = req.body;
+
+    const userId = req.user;
+
+    const user = await User.findById(userId);
+
+    if(!user){
+      return res.status(404).json({
+        Error: "Usuário não encontrado."
+      });
+    };
+
+    //Edição de dados
+    if(nome) user.nome = nome;
+    if(tipo) user.tipo = tipo;
+    if(endereco) {
+      user.endereco = {
+        ...user.endereco,
+        ...endereco,
+      };
+    }
+
+    //Edição de senha
+    if(senha){
+      const salt = await bcrypt.genSalt();
+      const hashSenha = await bcrypt.hash(senha, salt)
+      
+      user.senha = hashSenha;
+    }
+
+    await user.save();
+
+    res.status(201).json({
+      message: "Dados editados com sucesso!",
+      updatedUser: user
+    });
+
+  }
+  catch(error){
+    console.log(error);
+    return res.status(500).json({
+      Erro: "Erro interno do servidor!",
+    });
+  }
+}
+
+//Excluir Pets cadastrados
+export const deletePet = async (req: CustomRequest, res: Response) => {
+  try {
+    const { petId } = req.params;
+
+    const pet = await Pet.findById(petId);
+    if (!pet) {
+      return res.status(404).json({ error: "Pet não encontrado" });
+    }
+
+    if (pet.imagem) {
+      const match = pet.imagem.match(/\/upload\/v\d+\/(.+)\.\w+$/);
+      if (match && match[1]) {
+        const publicId = match[1];
+        try {
+          await cloudinary.uploader.destroy(publicId);
+          console.log("Deletado com sucesso no Cloudinary");
+        } catch (err) {
+          console.error("Erro ao deletar no Cloudinary:", err);
+        }
+      }
+    }
+
+    await pet.deleteOne();
+
+    res.status(200).json({ message: "Pet deletado com sucesso." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ Erro: "Erro interno do servidor!" });
+  }
+};
+
 
 

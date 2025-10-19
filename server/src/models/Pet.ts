@@ -3,8 +3,10 @@ import mongoose, { Schema, Types } from "mongoose";
 interface IPets {
     nome: string;
     especie: string;
-    dono: Types.ObjectId;
+    responsavel: Types.ObjectId;
     descricao: string;
+    idade: number;
+    porte: string;
     imagem: string;
 };
 
@@ -19,9 +21,17 @@ const PetSchema = new Schema<IPets>({
         required: true
     },
 
-    dono: {
+    idade: {
+        type: Number
+    },
+
+    responsavel: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+
+    porte: {
+        type: String
     },
 
     descricao: {
